@@ -1,52 +1,79 @@
 ---
-name: voiceclone
-description: Generate speech audio from text using ChatTTS. Use when the user wants to convert text to speech, generate voice audio, create TTS output, or says "voiceclone", "generate voice", "text to speech", "TTS".
+name: videogen
+description: Generate videos from text scripts. Converts written scripts into narrated videos by splitting text into steps, generating voice audio with ChatTTS, and rendering with Remotion. Use when the user wants to "make a video from text", "generate video", "text to video", "script to video", or says "videogen".
 ---
 
-# VoiceClone - Text to Speech Generator
+# VideoGen - Text to Video Generator
 
-Generate speech audio from text using ChatTTS.
+Convert a text script into a narrated video through a 3-step pipeline.
 
-## Script Location
+## Pipeline Overview
 
-`script/script.py`
-
-## Usage
-
-```bash
-./.venv/bin/python script/script.py <voice_kind> <text> [output_path]
+```
+User Script
+    │
+    ▼
+┌─────────────────────┐
+│ Step 1: Script Split │  refs/script-split.md
+│ Split & oral convert │
+│ Output: steps.json   │
+└─────────┬───────────┘
+          │
+          ▼
+┌─────────────────────┐
+│ Step 2: Voice Gen    │  refs/voice-generate.md
+│ ChatTTS per step     │
+│ Output: audio/*.wav  │
+└─────────┬───────────┘
+          │
+          ▼
+┌─────────────────────┐
+│ Step 3: Video Render │  refs/video-render.md
+│ Remotion React code  │
+│ Output: output.mp4   │
+└─────────────────────┘
 ```
 
-**Arguments:**
-- `voice_kind`: Voice selector. Use a number or name for a deterministic voice.
-- `text`: Text to read aloud.
-- `output_path`: (Optional) Output .wav path or directory. Defaults to `~/VoiceCloneResult/output.wav`.
+## How to Use
 
-## Default Output
+When the user provides a script/text to convert into video, execute the three steps in order. Load each step's ref document **only when starting that step** (progressive loading).
 
-Default output directory: `~/VoiceCloneResult/`
-If no output path is specified, the audio will be saved to `~/VoiceCloneResult/output.wav`.
+1. **Before Step 1**: Read `refs/script-split.md` for detailed instructions on splitting and oral conversion
+2. **Before Step 2**: Read `refs/voice-generate.md` for TTS generation details
+3. **Before Step 3**: Read `refs/video-render.md` for Remotion rendering instructions
 
-## Examples
+## Working Directory
 
-```bash
-# Generate with a numeric voice kind
-./.venv/bin/python script/script.py 1 "Hello, this is a test."
+All intermediate and final files are created in a working directory. Default: current directory or a user-specified path.
 
-# Generate with a named voice kind
-./.venv/bin/python script/script.py "female_voice" "你好世界"
-
-# Generate to a specific path
-./.venv/bin/python script/script.py 1 "Hello" ~/Desktop/my_audio.wav
-
-# Generate to a specific directory (will create output.wav in that directory)
-./.venv/bin/python script/script.py 1 "Hello" ~/Desktop/
+```
+<working_dir>/
+├── steps.json       # Step 1: structured step plan
+├── audio/           # Step 2: WAV files per step
+│   ├── step_1.wav
+│   └── ...
+├── video/           # Step 3: Remotion project
+└── output.mp4       # Final video
 ```
 
-## Features
+## Quick Reference
 
-- Uses ChatTTS for text-to-speech generation
-- Supports mixed Chinese and English text
-- Automatically normalizes technical terms (AI, API, CPU, etc.)
-- Splits long text into segments for better TTS quality
-- Default output directory: `~/VoiceCloneResult/`
+### Step 1 - Script Split
+- Input: user's raw text/script
+- Action: split into **sections** (visual pages) and **steps** (spoken sentences), convert to oral style
+- Output: `steps.json` — array of `{section, steps: [{step, text}]}`
+- Detail: `refs/script-split.md`
+
+### Step 2 - Voice Generation
+- Input: `steps.json`
+- Setup: `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt` (skip if already done)
+- Action: run `script/script.py` for each step to generate WAV audio (voice seed fixed as `"man"`)
+- Command: `.venv/bin/python script/script.py man "<text>" <output_path>`
+- Output: `audio/step_N.wav` files
+- Detail: `refs/voice-generate.md`
+
+### Step 3 - Video Rendering
+- Input: `steps.json` + `audio/*.wav`
+- Action: create Remotion React project, sync text display with audio, render MP4
+- Output: `output.mp4` in working directory
+- Detail: `refs/video-render.md`
