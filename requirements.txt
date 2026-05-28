@@ -1,0 +1,4 @@
+ChatTTS
+numpy
+torch
+requests
