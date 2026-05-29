@@ -16,23 +16,23 @@ This is the second step of the video generation pipeline. It reads `steps.json` 
 Before generating any audio, initialize the Python virtual environment and install dependencies:
 
 ```bash
-# 1. Create venv (skip if .venv already exists)
-python3 -m venv .venv
+# 1. Create venv (skip if venv or .venv already exists)
+python3 -m venv venv
 
 # 2. Install dependencies from requirements.txt
-.venv/bin/pip install -r requirements.txt
+venv/bin/pip install -r requirements.txt
 ```
 
 The `requirements.txt` is at the skill root and includes: ChatTTS, numpy, torch, requests.
 
-If `.venv` already exists and packages are installed, you can skip this step.
+If `venv` or virtual python env already exists and packages are installed, you can skip this step.
 
 ## How It Works
 
 For each step across all sections in `steps.json`, run the TTS script:
 
 ```bash
-.venv/bin/python script/script.py man "<text>" <output_path>
+venv/bin/python script/script.py man "<text>" <output_path>
 ```
 
 ### Arguments
@@ -60,13 +60,13 @@ Iterate through sections in order, then steps within each section. Process seque
 
 ```bash
 # Section 1, steps 1-3:
-.venv/bin/python script/script.py man "你知道吗，人工智能其实已经在悄悄改变我们的生活了。" ./audio/step_1.wav
-.venv/bin/python script/script.py man "从看病就医到学校教育，AI 的应用可以说无处不在。" ./audio/step_2.wav
-.venv/bin/python script/script.py man "根据最新的数据，2024年全球 AI 市场的规模已经超过了5000亿美元。" ./audio/step_3.wav
+venv/bin/python script/script.py man "你知道吗，人工智能其实已经在悄悄改变我们的生活了。" ./audio/step_1.wav
+venv/bin/python script/script.py man "从看病就医到学校教育，AI 的应用可以说无处不在。" ./audio/step_2.wav
+venv/bin/python script/script.py man "根据最新的数据，2024年全球 AI 市场的规模已经超过了5000亿美元。" ./audio/step_3.wav
 
 # Section 2, steps 4-5:
-.venv/bin/python script/script.py man "不过与此同时，大家也越来越关注 AI 的安全和伦理问题。" ./audio/step_4.wav
-.venv/bin/python script/script.py man "各国政府也都在加快制定相关的法规。" ./audio/step_5.wav
+venv/bin/python script/script.py man "不过与此同时，大家也越来越关注 AI 的安全和伦理问题。" ./audio/step_4.wav
+venv/bin/python script/script.py man "各国政府也都在加快制定相关的法规。" ./audio/step_5.wav
 ```
 
 ## Error Handling
