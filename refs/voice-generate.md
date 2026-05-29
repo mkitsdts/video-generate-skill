@@ -29,55 +29,85 @@ If `venv` or virtual python env already exists and packages are installed, you c
 
 ## How It Works
 
-For each step across all sections in `steps.json`, run the TTS script:
+Use the **batch script** to generate all WAV files in one command. It reads `steps.json`, loads the ChatTTS model once, and produces one WAV per step sequentially.
+
+```bash
+venv/bin/python scripts/batch_voice.py steps.json [output_dir] [--voice man]
+```
+
+### Arguments
+
+| Argument | Required | Default | Description |
+|---|---|---|---|
+| `steps_json` | yes | - | Path to `steps.json` from Step 1 |
+| `output_dir` | no | `audio` | Directory for output WAV files |
+| `--voice` | no | `man` | Voice seed for ChatTTS |
+
+### Output File Naming
+
+WAV files are saved in the output directory, named by step number with zero-padded digits:
+
+```
+audio/step_1.wav
+audio/step_2.wav
+...
+audio/step_09.wav
+audio/step_10.wav
+```
+
+### Example
+
+```bash
+venv/bin/python scripts/batch_voice.py steps.json ./audio --voice man
+```
+
+Output:
+
+```
+Loading ChatTTS models (first invocation is slow)...
+[1/5] step_1.wav: 你知道吗，人工智能其实已经在悄悄改变...
+  -> audio/step_1.wav  (3.2s)
+[2/5] step_2.wav: 从看病就医到学校教育，AI 的应用可以说...
+  -> audio/step_2.wav  (2.8s)
+...
+Done. 5/5 succeeded.
+```
+
+### Single Step (Manual)
+
+If you need to regenerate a single step, use `script.py` directly:
 
 ```bash
 venv/bin/python scripts/script.py man "<text>" <output_path>
 ```
 
-### Arguments
-
-- `voice_seed`: Always use `"man"` as the voice seed for consistent male narrator voice.
-- `text`: The `text` value from the step. Quote it properly to handle special characters.
-- `output_path`: Path for the output WAV file.
-
-### Output File Naming
-
-Save WAV files in an `audio/` subdirectory of the working directory, named by step number:
-
-```
-audio/step_1.wav
-audio/step_2.wav
-audio/step_3.wav
-...
-```
-
-Use zero-padded numbers if there are 10+ steps (e.g., `step_01.wav`) for proper sorting.
-
-## Execution Pattern
-
-Iterate through sections in order, then steps within each section. Process sequentially (ChatTTS loads large models, parallel execution may cause memory issues):
-
-```bash
-# Section 1, steps 1-3:
-venv/bin/python scripts/script.py man "你知道吗，人工智能其实已经在悄悄改变我们的生活了。" ./audio/step_1.wav
-venv/bin/python scripts/script.py man "从看病就医到学校教育，AI 的应用可以说无处不在。" ./audio/step_2.wav
-venv/bin/python scripts/script.py man "根据最新的数据，2024年全球 AI 市场的规模已经超过了5000亿美元。" ./audio/step_3.wav
-
-# Section 2, steps 4-5:
-venv/bin/python scripts/script.py man "不过与此同时，大家也越来越关注 AI 的安全和伦理问题。" ./audio/step_4.wav
-venv/bin/python scripts/script.py man "各国政府也都在加快制定相关的法规。" ./audio/step_5.wav
-```
-
 ## Error Handling
 
-- If a step fails, log the error and continue with remaining steps
-- After all steps, report which steps succeeded and which failed
-- The script prints the output path on success
+### steps.json Validation (Before Generation Starts)
+
+The script validates `steps.json` strictly before doing any work. If any check fails, it prints an error to stderr and exits with code 1 immediately:
+
+- File not found or unreadable
+- Invalid JSON syntax
+- Root element is not a JSON array
+- Section object missing `section` or `steps` field
+- `steps` is not an array
+- Step object missing `step` or `text` field
+- `step` is not a positive integer
+- `text` is empty or not a string
+- Duplicate step numbers
+- Step numbers not sequential from 1 to N
+
+### Generation Errors
+
+- If a step fails during TTS generation, the script logs the error and continues with remaining steps
+- At the end, a summary is printed: how many succeeded and the list of failed step numbers
+- Exit code is `1` if any step failed, `0` if all succeeded
 
 ## Notes
 
+- The batch script loads the ChatTTS model only once (~300MB), making it much faster than calling `script.py` per step
 - Each WAV file is mono, 24kHz, 16-bit PCM
 - The script handles mixed Chinese/English text and normalizes technical terms
 - Long text is automatically split into segments with pauses between them
-- First invocation loads models (~300MB), subsequent calls are faster
+- Steps are processed sequentially — parallel execution may cause memory issues
