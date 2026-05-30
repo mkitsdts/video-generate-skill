@@ -1,5 +1,6 @@
 import argparse
 import hashlib
+import os
 import re
 import wave
 from pathlib import Path
@@ -143,7 +144,10 @@ def infer_wav(chat, voice_kind, text):
             repetition_penalty=1.1,
         )
 
-    kwargs: dict[str, Any] = {"use_decoder": True}
+    kwargs: dict[str, Any] = {
+        "use_decoder": True,
+        "skip_refine_text": True,
+    }
     if params_infer_code is not None:
         kwargs["params_infer_code"] = params_infer_code
 
@@ -201,12 +205,13 @@ def main():
     parser.add_argument(
         "voice_kind",
         help="Voice selector. Use a number or name for a deterministic voice.",
+        default="2422",
     )
     parser.add_argument("text", help="Text to read.")
     parser.add_argument(
         "output_path",
         nargs="?",
-        default="",
+        default=f"{os.getcwd()}/../voice_output.wav",
         help="Output .wav path or output directory. Empty value writes output.wav to ~/VoiceCloneResult.",
     )
     args = parser.parse_args()

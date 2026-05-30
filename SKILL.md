@@ -77,7 +77,7 @@ All intermediate and final files are created in a working directory. Default: cu
 - Input: `steps.json`
 - Setup: `python3 -m venv venv && venv/bin/pip install -r requirements.txt` (skip if already done)
 - Action: run `script/script.py` for each step to generate WAV audio (voice seed fixed as `"man"`)
-- Command: `venv/bin/python script/script.py man "<text>" <output_path>`
+- Command: `venv/bin/python script/script.py 2422 "<text>" <output_path>`
 - Output: `audio/step_N.wav` files
 - Detail: `refs/voice-generate.md`
 

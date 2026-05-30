@@ -32,7 +32,7 @@ If `venv` or virtual python env already exists and packages are installed, you c
 Use the **batch script** to generate all WAV files in one command. It reads `steps.json`, loads the ChatTTS model once, and produces one WAV per step sequentially.
 
 ```bash
-venv/bin/python scripts/batch_voice.py steps.json [output_dir] [--voice man]
+venv/bin/python scripts/batch_voice.py steps.json [output_dir] [--voice 2422]
 ```
 
 ### Arguments
@@ -41,7 +41,7 @@ venv/bin/python scripts/batch_voice.py steps.json [output_dir] [--voice man]
 |---|---|---|---|
 | `steps_json` | yes | - | Path to `steps.json` from Step 1 |
 | `output_dir` | no | `audio` | Directory for output WAV files |
-| `--voice` | no | `man` | Voice seed for ChatTTS |
+| `--voice` | no | `2422` | Voice seed for ChatTTS |
 
 ### Output File Naming
 
@@ -58,7 +58,7 @@ audio/step_10.wav
 ### Example
 
 ```bash
-venv/bin/python scripts/batch_voice.py steps.json ./audio --voice man
+venv/bin/python scripts/batch_voice.py steps.json ./audio --voice 2422
 ```
 
 Output:
@@ -78,7 +78,7 @@ Done. 5/5 succeeded.
 If you need to regenerate a single step, use `script.py` directly:
 
 ```bash
-venv/bin/python scripts/script.py man "<text>" <output_path>
+venv/bin/python scripts/script.py 2422 "<text>" <output_path>
 ```
 
 ## Error Handling
