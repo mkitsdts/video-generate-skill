@@ -101,7 +101,7 @@ const StepText: React.FC<{ text: string; durationInFrames: number }> = ({ text, 
   const frame = useCurrentFrame();
   const opacity = interpolate(frame, [0, 15], [0, 1], { extrapolateRight: "clamp" });
   return (
-    <div style={{ opacity, fontSize: 56, color: "white", textAlign: "center", padding: "0 120px" }}>
+    <div style={{ opacity, fontSize: 30, color: "white", textAlign: "center", padding: "0 120px" }}>
       {text}
     </div>
   );
@@ -137,7 +137,7 @@ export const VideoComposition: React.FC = () => {
 Each section page should display:
 - **Background**: solid color or gradient — stays the same for all steps in the section
 - **Section visual diagram** (REQUIRED): a dedicated illustration/diagram for the section — see Section 3.5.1
-- **Text**: centered, large font, good contrast — updates when the next step starts
+- **Text (subtitle)**: centered, small font (28-32px), good contrast — updates when the next step starts. Subtle, bottom-aligned.
 - **Section indicator**: optional small section number or progress bar
 - **Animations**: fade-in text when each step starts using `useCurrentFrame()` and `interpolate()`
 
@@ -145,9 +145,11 @@ Recommended base style:
 - Resolution: 1920x1080 (16:9)
 - FPS: 30
 - Background: dark (#1a1a2e or similar)
-- Text: white or light color, 40-48px font size (reduced from 56px to make room for visuals)
+- Text (subtitle): white or light color, 28-32px font size — small and at the bottom, NOT the main focus
 - Padding: generous margins for readability
-- Layout: visual diagram takes top 50-60% of frame, text takes bottom 40-50%
+- Layout: visual diagram takes top 80-85% of frame, text takes bottom 15-20%
+- The visual diagram is the PRIMARY element — users must clearly see it
+- Subtitles are secondary — small, bottom-aligned, just for reading along
 
 #### 3.5.1 Section Visual Diagrams (REQUIRED)
 
@@ -155,8 +157,8 @@ Each section MUST have a visual diagram/illustration that matches its content. T
 
 **Requirements:**
 1. **Content match**: The visual MUST accurately represent the concept discussed in that section. Read the step texts carefully and design a diagram that illustrates the key idea.
-2. **Minimum size**: The visual diagram MUST occupy at least 50% of the frame height (top portion). Do NOT make diagrams too small — they should be the primary visual element.
-3. **Readability**: All labels, icons, and diagram elements must be clearly visible at 1920x1080. Use minimum 18px font for labels, 22px+ for node/box text.
+2. **Minimum size**: The visual diagram MUST occupy at least 80% of the frame height (top portion). This is the PRIMARY element users should see — make it large and clear.
+3. **Readability**: All labels, icons, and diagram elements must be clearly visible at 1920x1080. Use minimum 22px font for labels, 28px+ for node/box text. Diagram elements should be large enough to read easily.
 4. **Consistent style**: Use a unified color scheme and design language across all sections.
 5. **Animation**: Diagram elements should fade in with staggered delays using `useCurrentFrame()` and `interpolate()`.
 
@@ -177,13 +179,13 @@ Each section MUST have a visual diagram/illustration that matches its content. T
 **Example layout in Composition.tsx:**
 ```tsx
 <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
-  {/* Visual diagram - top 55% */}
-  <div style={{ flex: "0 0 55%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+  {/* Visual diagram - top 85% — PRIMARY element */}
+  <div style={{ flex: "0 0 85%", display: "flex", alignItems: "center", justifyContent: "center" }}>
     {Visual && <Visual />}
   </div>
-  {/* Text - bottom 45% */}
-  <div style={{ flex: "0 0 45%", display: "flex", alignItems: "flex-start", justifyContent: "center" }}>
-    {/* StepText + Audio sequences */}
+  {/* Text subtitle - bottom 15% — small, secondary */}
+  <div style={{ flex: "0 0 15%", display: "flex", alignItems: "center", justifyContent: "center", padding: "0 120px" }}>
+    {/* StepText with 28-32px font + Audio sequences */}
   </div>
 </div>
 ```
